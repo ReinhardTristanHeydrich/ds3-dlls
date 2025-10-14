@@ -15,6 +15,7 @@ const ORIGINAL_ALT: [u8; 5] = [CALL_REL32, 0x1a, 0xbc, 0x04, 0x00]; // call dark
 
 const PATCHED: [u8; 5] = [NOP, NOP, NOP, NOP, NOP];
 
+#[unsafe(no_mangle)]
 #[allow(non_snake_case)]
 #[allow(unsafe_op_in_unsafe_fn)]
 pub unsafe extern "C" fn DllMain(_: HMODULE, reason: u32, _: *mut ()) -> bool {
@@ -28,7 +29,7 @@ pub unsafe extern "C" fn DllMain(_: HMODULE, reason: u32, _: *mut ()) -> bool {
             common::restore_bytes(OFFSET_ALT, &ORIGINAL_ALT).ok();
         }
         _ => {},
-    }
+    };
 
     true
 }

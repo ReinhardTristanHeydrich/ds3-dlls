@@ -6,6 +6,7 @@ const OFFSET:   usize   = 0x583a5d;
 const ORIGINAL: [u8; 4] = [REP, ADDSS_XMM, ADDSS_OPCODE, 0xF0];
 const PATCHED:  [u8; 4] = [SSE_PREFIX, XORPS_OPCODE, REG_XMM6_XMM6, NOP];
 
+#[unsafe(no_mangle)]
 #[allow(non_snake_case)]
 #[allow(unsafe_op_in_unsafe_fn)]
 pub unsafe extern "C" fn DllMain(_: HMODULE, reason: u32, _: *mut ()) -> bool {

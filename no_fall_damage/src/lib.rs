@@ -23,6 +23,8 @@ static mut ALLOCATED_MEM: *mut u8 = ptr::null_mut();
  /*✦ . 　⁺ 　 . ✦ . 　⁺ 　 . ✦ . 　⁺ 　 . ✦ . 　⁺ 　 . ✦ . ⁺ ✦ Code ✦ . 　⁺ 　 . ✦ . 　⁺ 　 . ✦ . 　⁺ 　 . ✦ . 　⁺ 　 . ✦ . ⁺ . ✦*/
 /*✦════════════════════════════════════════════════════════════ ✦ ═════════════════════════════════════════════════════════════✦*/
 /*✦──────────────✦ DLL-Main ✦──────────────✦*/
+
+#[unsafe(no_mangle)]
 #[allow(non_snake_case)]
 #[allow(unsafe_op_in_unsafe_fn)]
 pub unsafe extern "C" fn DllMain(hmodule: HMODULE, reason: u32, _: *mut ()) -> bool {
