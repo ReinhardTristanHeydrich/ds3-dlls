@@ -35,6 +35,7 @@ dependencies = [
 name = "no_durability_damage"
 version = "1.0.0"
 dependencies = [
+ "common",
  "windows",
 ]
 
@@ -42,6 +43,7 @@ dependencies = [
 name = "no_equip_load"
 version = "1.0.0"
 dependencies = [
+ "common",
  "windows",
 ]
 
@@ -49,6 +51,7 @@ dependencies = [
 name = "no_fall_damage"
 version = "1.0.0"
 dependencies = [
+ "common",
  "windows",
 ]
 
@@ -56,6 +59,7 @@ dependencies = [
 name = "no_souls_loss"
 version = "1.0.0"
 dependencies = [
+ "common",
  "windows",
 ]
 
@@ -63,6 +67,7 @@ dependencies = [
 name = "no_souls_loss_alt"
 version = "1.0.0"
 dependencies = [
+ "common",
  "windows",
 ]
 

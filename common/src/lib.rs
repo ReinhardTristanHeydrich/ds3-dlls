@@ -1,6 +1,16 @@
 use std::ptr;
 use windows::Win32::System::LibraryLoader::GetModuleHandleA;
-use region::{ Protection, Allocation };
+use windows::Win32::System::Memory::{
+    VirtualProtect,
+    VirtualAlloc,
+    VirtualFree,
+    PAGE_EXECUTE_READWRITE,
+    PAGE_PROTECTION_FLAGS,
+    MEM_COMMIT,
+    MEM_RESERVE,
+    MEM_RELEASE,
+    VIRTUAL_ALLOCATION_TYPE,
+};
 
 #[allow(unsafe_op_in_unsafe_fn)]
 pub unsafe fn get_base_address() -> Result<usize, String> {
@@ -13,12 +23,11 @@ pub unsafe fn patch_bytes(offset: usize, original: &[u8], patched: &[u8]) -> Res
     let base: usize   = get_base_address()?;
     let addr: *mut u8 = (base + offset) as *mut u8;
 
-    //Byte verification
     let current = std::slice::from_raw_parts(addr, original.len());
-    if  current != original {
+    if current != original {
         return Err(
             format!(
-                "Bytes didn't match in offset 0x{:X}! Expected: {:02X?}, Founded: {:02X?}",
+                "Bytes don't match in offset 0x{:X}! Expected: {:02X?}, Founded: {:02X?}",
                 offset,
                 original,
                 current
@@ -26,34 +35,54 @@ pub unsafe fn patch_bytes(offset: usize, original: &[u8], patched: &[u8]) -> Res
         );
     }
 
-    region::protect(addr, patched.len(), Protection::READ_WRITE_EXECUTE)
-    .map_err(|e| format!("Failed to change protection: {:?}", e))?;
+
+    let mut old_protect = PAGE_PROTECTION_FLAGS(0);
+    VirtualProtect(
+        addr as *const _,
+        patched.len(),
+        PAGE_EXECUTE_READWRITE,
+        &mut old_protect
+    ).map_err(|e| format!("Failed to change protection: {:?}", e))?;
 
     ptr::copy_nonoverlapping(patched.as_ptr(), addr, patched.len());
+
+    VirtualProtect(addr as *const _, patched.len(), old_protect, &mut old_protect).ok();
 
     Ok(())
 }
 
 #[allow(unsafe_op_in_unsafe_fn)]
 pub unsafe fn restore_bytes(offset: usize, original: &[u8]) -> Result<(), String> {
-    let base = get_base_address()?;
-    let addr = (base + offset) as *mut u8;
+    let base: usize   = get_base_address()?;
+    let addr: *mut u8 = (base + offset) as *mut u8;
 
-    region::protect(addr, original.len(), Protection::READ_WRITE_EXECUTE)
-    .map_err(|e| format!("Falha ao mudar proteção: {:?}", e))?;
+    let mut old_protect = PAGE_PROTECTION_FLAGS(0);
+    VirtualProtect(addr as *const _, original.len(), PAGE_EXECUTE_READWRITE, &mut old_protect).ok();
 
     ptr::copy_nonoverlapping(original.as_ptr(), addr, original.len());
+
+    VirtualProtect(addr as *const _, original.len(), old_protect, &mut old_protect).ok();
 
     Ok(())
 }
 
-pub unsafe fn allocate_memory(size: usize) -> Result<Allocation, String> {
-    region::alloc(size, Protection::READ_WRITE_EXECUTE)
-    .map_err(|e| format!("Failed to allocate memory: {:?}", e))
+#[allow(unsafe_op_in_unsafe_fn)]
+pub unsafe fn allocate_memory(size: usize) -> Result<*mut u8, String> {
+    let addr = VirtualAlloc(
+        None,
+        size,
+        VIRTUAL_ALLOCATION_TYPE(MEM_COMMIT.0 | MEM_RESERVE.0),
+        PAGE_EXECUTE_READWRITE
+    );
+
+    if addr.is_null() {
+        Err("Failed to allocate memory".to_string())
+    } else {
+        Ok(addr as *mut u8)
+    }
 }
 
-#[inline(always)]
-#[deprecated(note = "Use `drop(alloc)` instead")]
-pub unsafe fn free_memory(alloc: Allocation) {
-    drop(alloc);
+#[allow(unsafe_op_in_unsafe_fn)]
+pub unsafe fn free_memory(addr: *mut u8) {
+    VirtualFree(addr as *mut _, 0, MEM_RELEASE).ok();
 }

@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 windows = { workspace = true }
+common  = { path = "../common" }
 
 [lib]
 crate-type = ["cdylib"]
