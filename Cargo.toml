@@ -1,0 +1,22 @@
+# [package]
+# name    = "ds3-dlls"
+# version = "1.0.0"
+# edition = "2024"
+
+[workspace]
+resolver = "3"
+members = [
+    "no_equip_load",
+    "no_durability_damage",
+    "no_souls_loss",
+    "no_souls_loss_alt",
+    "no_fall_damage",
+    
+    "common",
+]
+
+[workspace.dependencies]
+windows = { version = "0.62.2", features = ["Win32_System_LibraryLoader"] }
+region  = "3"
+
+

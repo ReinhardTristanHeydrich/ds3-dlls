@@ -1,0 +1,12 @@
+[package]
+name    = "common"
+version = "1.0.0"
+edition = "2024"
+
+[dependencies]
+windows = { workspace = true }
+region = { workspace = true }
+
+[lib]
+crate-type = ["cdylib"]
+name       = "ds3_no_durability_damage"

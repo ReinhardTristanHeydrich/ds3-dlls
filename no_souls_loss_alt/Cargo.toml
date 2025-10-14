@@ -1,0 +1,11 @@
+[package]
+name    = "no_souls_loss_alt"
+version = "1.0.0"
+edition = "2024"
+
+[dependencies]
+windows = { workspace = true }
+
+[lib]
+crate-type = ["cdylib"]
+name       = "ds3_no_souls_loss_alt"
