@@ -9,7 +9,6 @@ members = [
     "no_equip_load",
     "no_durability_damage",
     "no_souls_loss",
-    "no_souls_loss_alt",
     "no_fall_damage",
     
     "common",

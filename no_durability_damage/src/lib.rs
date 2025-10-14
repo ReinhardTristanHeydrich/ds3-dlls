@@ -1,17 +1,20 @@
-use windows::{core::BOOL, Win32::Foundation::HMODULE};
+use common::{MOV_EDX_EBX, REG_EBX, XOR_EDX_EDX, REG_EDX_EDX};
+use common::{ DLL_PROCESS_ATTACH, DLL_PROCESS_DETACH };
+use windows::Win32::Foundation::HMODULE;
 
 const OFFSET:   usize   = 0x58bfe4;
-const ORIGINAL: [u8; 2] = [0x8B, 0xD3]; // mov edx,ebx
-const PATCHED:  [u8; 2] = [0x31, 0xD2]; // xor edx,edx
+const ORIGINAL: [u8; 2] = [MOV_EDX_EBX, REG_EBX];
+const PATCHED:  [u8; 2] = [XOR_EDX_EDX, REG_EDX_EDX];
 
 
+#[allow(non_snake_case)]
 #[allow(unsafe_op_in_unsafe_fn)]
-#[unsafe(export_name = "DllMain")]
-pub unsafe extern "system" fn main(_: HMODULE, reason: u32, _: *mut ()) -> BOOL {
+pub unsafe extern "C" fn DllMain(_: HMODULE, reason: u32, _: *mut ()) -> bool {
     match reason {
-        1 => common::patch_bytes(OFFSET, &ORIGINAL, &PATCHED).ok(),
-        0 => common::restore_bytes(OFFSET, &ORIGINAL).ok(),
+        DLL_PROCESS_ATTACH => common::patch_bytes(OFFSET, &ORIGINAL, &PATCHED).ok(),
+        DLL_PROCESS_DETACH => common::restore_bytes(OFFSET, &ORIGINAL).ok(),
         _ => None,
     };
-    true.into()
+
+    true
 }

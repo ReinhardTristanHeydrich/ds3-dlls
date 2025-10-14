@@ -1,3 +1,6 @@
+/*✦════════════════════════════════════════════════════════════ ✦ ═════════════════════════════════════════════════════════════✦*/
+ /*✦ . 　⁺ 　 . ✦ . 　⁺ 　 . ✦ . 　⁺ 　 . ✦ . 　⁺ 　 . ✦ .  Compile-Time ✦ . 　⁺ 　 . ✦ . 　⁺ 　 . ✦ . 　⁺ 　 . ✦ . 　⁺ 　 . ✦ . */
+/*✦════════════════════════════════════════════════════════════ ✦ ═════════════════════════════════════════════════════════════✦*/
 use std::ptr;
 use windows::Win32::System::LibraryLoader::GetModuleHandleA;
 use windows::Win32::System::Memory::{
@@ -12,6 +15,41 @@ use windows::Win32::System::Memory::{
     VIRTUAL_ALLOCATION_TYPE,
 };
 
+/*✦════════════════════════════════════════════✦ pub consts ✦════════════════════════════════════════════✦*/
+/* ────────────────────── MOV / XOR ────────────────────── */
+pub const MOV_EDX_EBX: u8 = 0x8B; // prefix => MOV r32, r/m32
+pub const REG_EBX:     u8 = 0xD3; // modrm  => EBX→EDX
+
+pub const XOR_EDX_EDX: u8 = 0x31; // XOR r/m32, r32
+pub const REG_EDX_EDX: u8 = 0xD2; // modrm => EDX, EDX
+
+/* ─────────────────── SSE (FLOAT OPS) ─────────────────── */
+pub const REP:           u8 = 0xF3; // REP
+pub const ADDSS_XMM:     u8 = 0x0F; // SSE
+pub const ADDSS_OPCODE:  u8 = 0x58; // ADDSS  xmm, xmm/m32
+pub const MOVAPS_OPCODE: u8 = 0x28; // MOVAPS xmm, xmm/m128
+pub const XORPS_OPCODE:  u8 = 0x57; // XORPS  xmm, xmm/m128
+
+/* ──────────────── MODRM / REG VARIANTS ──────────────── */
+pub const REG_EBX_EDX:   u8 = 0xD3;
+pub const REG_XMM6_XMM6: u8 = 0xF6;
+pub const MODRM_B1:      u8 = 0xB1;
+
+/*  ─────────────────── CONTROL FLOW ─────────────────── */
+pub const CALL_REL32: u8 = 0xE8;
+pub const JMP_REL32:  u8 = 0xE9;
+pub const NOP:        u8 = 0x90;
+
+/*✦────────────────────────────✦ Reasons ✦────────────────────────────✦*/
+pub const DLL_PROCESS_ATTACH: u32 = 1;
+pub const DLL_PROCESS_DETACH: u32 = 0;
+//++++++++
+pub const SSE_PREFIX: u8 = 0x0F;
+
+
+/*✦════════════════════════════════════════════════════════════ ✦ ═════════════════════════════════════════════════════════════✦*/
+ /*✦ . 　⁺ 　 . ✦ . 　⁺ 　 . ✦ . 　⁺ 　 . ✦ . 　⁺ 　 . ✦ .    Functions   ✦ . 　⁺ 　 . ✦ . 　⁺ 　 . ✦ . 　⁺ 　 . ✦ . 　⁺ 　 . ✦ . */
+/*✦════════════════════════════════════════════════════════════ ✦ ═════════════════════════════════════════════════════════════✦*/
 #[allow(unsafe_op_in_unsafe_fn)]
 pub unsafe fn get_base_address() -> Result<usize, String> {
     let base = GetModuleHandleA(None).map_err(|e| format!("Failed to get base module: {:?}", e))?;

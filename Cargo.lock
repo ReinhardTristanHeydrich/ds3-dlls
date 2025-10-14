@@ -64,14 +64,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "no_souls_loss_alt"
-version = "1.0.0"
-dependencies = [
- "common",
- "windows",
-]
-
-[[package]]
 name = "proc-macro2"
 version = "1.0.101"
 source = "registry+https://github.com/rust-lang/crates.io-index"
