@@ -4,8 +4,9 @@ version = "1.0.0"
 edition = "2024"
 
 [dependencies]
-windows = { workspace = true }
 common  = { path = "../common" }
+windows = { workspace = true }
+winapi  = { workspace = true }
 
 [lib]
 crate-type = ["cdylib"]

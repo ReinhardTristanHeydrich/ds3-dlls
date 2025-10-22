@@ -1,25 +1,24 @@
-# [package]
-# name    = "ds3-dlls"
-# version = "1.0.0"
-# edition = "2024"
-
 [workspace]
 resolver = "3"
 members = [
-    "no_equip_load",
-    "no_durability_damage",
-    "no_souls_loss",
-    "no_fall_damage",
-    
     "common",
+
+    "no_durability_damage",
+    "no_equip_load",
+    "no_souls_loss",
 ]
 
 [workspace.dependencies]
 windows = { version = "0.62.2", features = [
     "Win32_System_LibraryLoader",
     "Win32_System_Memory",
-    "Win32_Foundation"
+    "Win32_Foundation",
     ] }
+winapi = {version = "0.3.9", features = [
+    "processthreadsapi",
+    "libloaderapi",
+    "handleapi",
+    ]}
 region  = "3"
 
 
